@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tablescrape"
+version = "0.1.0"
+description = "Copy every table in a folder of PDFs into a labeled Excel workbook and CSV files, using a local vision-language model."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pypdfium2>=4.30",
+    "Pillow>=10",
+    "openpyxl>=3.1",
+    "json-repair>=0.30",
+]
+
+[project.optional-dependencies]
+# Only needed on the GPU node. On iTiger, hpc/itiger/environment.yml installs these with versions that match the
+# cluster's NVIDIA driver; do not let pip pick a newer torch there.
+gpu = [
+    "torch>=2.4",
+    "torchvision",
+    "transformers>=4.57,<5",
+    "accelerate>=1.0",
+]
+ocr = ["pytesseract>=0.3.10"]  # also needs the tesseract program installed
+test = ["pytest>=7"]
+
+[project.scripts]
+tablescrape = "tablescrape.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
