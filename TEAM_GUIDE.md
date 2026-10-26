@@ -351,12 +351,12 @@ On the login node:
 
 ```bash
 cd /project/<you>
-git clone <REPO_URL> tablescrape
+git clone git@github.com:natsirt-uofm/tablescrape.git tablescrape
 ```
 
 - `cd /project/<you>` moves to your project folder. Work in `/project/<you>/`, not your home folder (20 GB limit).
-- `git clone <REPO_URL> tablescrape` copies the repository from GitHub. `<REPO_URL>` is the address on the repository's
-  green **Code** button; the last word is the name of the folder to create.
+- `git clone git@github.com:natsirt-uofm/tablescrape.git tablescrape` copies the repository from GitHub. `git@github.com:natsirt-uofm/tablescrape.git` is the repository's address (SSH form; the HTTPS form is on the
+  green **Code** button); the last word is the name of the folder to create.
 - **Produces:** `/project/<you>/tablescrape/` with the code and scripts. PDFs and results are not in the repository.
 - **If the repository is private**, the login node needs your GitHub access. Either add an SSH key (`ssh-keygen -t
   ed25519` on the cluster, paste `~/.ssh/id_ed25519.pub` into GitHub under Settings, SSH keys, and clone the

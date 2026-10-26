@@ -51,13 +51,13 @@ On the login node (connect with `ssh jtbass1@itiger.memphis.edu`):
 
 ```bash
 cd /project/jtbass1
-git clone <REPO_URL> tablescrape
+git clone git@github.com:natsirt-uofm/tablescrape.git tablescrape
 ```
 
 - `cd /project/jtbass1` moves to your project folder. Work under `/project/<you>`, not your home folder: home is
   limited to 20 GB, and the model alone is 17 GB or more.
-- `git clone <REPO_URL> tablescrape` copies the repository. `<REPO_URL>` is the address on the repository's green
-  **Code** button on GitHub; the last word, `tablescrape`, is the name of the folder to create.
+- `git clone git@github.com:natsirt-uofm/tablescrape.git tablescrape` copies the repository. `git@github.com:natsirt-uofm/tablescrape.git` is the repository's address (SSH form; the HTTPS form is on the
+  green **Code** button); the last word, `tablescrape`, is the name of the folder to create.
 - **Produces**: `/project/jtbass1/tablescrape/` with all the code and scripts. PDFs and results are deliberately not in the
   repository.
 - **If the repository is private**, the login node needs your GitHub access. Either add an SSH key (`ssh-keygen -t ed25519`
