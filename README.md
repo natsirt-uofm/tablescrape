@@ -43,40 +43,40 @@ and caption are separate columns, because many tables have no number and some nu
 is for installing, cloning, copying files and submitting jobs. Everything that loads the model goes through Slurm (`sbatch`
 or `srun`). `tablescrape run` itself refuses to start when it sees no GPU, so it will not accidentally run there.
 
-Below, `jtbass1` stands for your own user name.
+Below, `<you>` stands for your own iTiger user name.
 
 ### 0. Clone the repository onto the cluster
 
-On the login node (connect with `ssh jtbass1@itiger.memphis.edu`):
+On the login node (connect with `ssh <you>@itiger.memphis.edu`):
 
 ```bash
-cd /project/jtbass1
+cd /project/<you>
 git clone git@github.com:natsirt-uofm/tablescrape.git tablescrape
 ```
 
-- `cd /project/jtbass1` moves to your project folder. Work under `/project/<you>`, not your home folder: home is
+- `cd /project/<you>` moves to your project folder. Work under `/project/<you>`, not your home folder: home is
   limited to 20 GB, and the model alone is 17 GB or more.
 - `git clone git@github.com:natsirt-uofm/tablescrape.git tablescrape` copies the repository. `git@github.com:natsirt-uofm/tablescrape.git` is the repository's address (SSH form; the HTTPS form is on the
   green **Code** button); the last word, `tablescrape`, is the name of the folder to create.
-- **Produces**: `/project/jtbass1/tablescrape/` with all the code and scripts. PDFs and results are deliberately not in the
+- **Produces**: `/project/<you>/tablescrape/` with all the code and scripts. PDFs and results are deliberately not in the
   repository.
 - **If the repository is private**, the login node needs your GitHub access. Either add an SSH key (`ssh-keygen -t ed25519`
   on the cluster, then paste the contents of `~/.ssh/id_ed25519.pub` into GitHub, Settings, SSH keys, and clone with the
   `git@github.com:...` address), or clone the `https://` address and use a personal access token as the password.
-- **Later, to get updates**: `cd /project/jtbass1/tablescrape && git pull`. `git pull` downloads new commits and merges
+- **Later, to get updates**: `cd /project/<you>/tablescrape && git pull`. `git pull` downloads new commits and merges
   them in. Run `setup.sh` again only if `hpc/itiger/environment.yml` changed.
 
 ### 1. One-time setup (login node, about 30 minutes, mostly downloading)
 
 ```bash
-cd /project/jtbass1/tablescrape
+cd /project/<you>/tablescrape
 bash hpc/itiger/setup.sh
 ```
 
 - `cd` moves into the repository; every script here expects to be started from its root.
 - `bash hpc/itiger/setup.sh` runs the setup script with bash.
-- **Produces**: a conda environment in `/project/jtbass1/conda-envs/tablescrape` (Python 3.11, PyTorch 2.6 built
-  for CUDA 12.4, transformers 4.57.6), and the model weights in `/project/jtbass1/hf-cache/`. Both deliberately
+- **Produces**: a conda environment in `/project/<you>/conda-envs/tablescrape` (Python 3.11, PyTorch 2.6 built
+  for CUDA 12.4, transformers 4.57.6), and the model weights in `/project/<you>/hf-cache/`. Both deliberately
   live under `/project`: on iTiger Miniconda usually sits in home, and a default environment (about 8 GB) would land
   in the 20 GB home quota. This is installing and downloading, which the admins
   allow on the login node. Nothing runs the model.
@@ -89,7 +89,7 @@ the cluster has, and then quietly runs on the CPU, which is about 100x slower. T
 
 ### 2. Quick test on a GPU node (do this once before a big run)
 
-Put two or three PDFs in a folder, e.g. `/project/jtbass1/test_pdfs/`, then ask Slurm for an interactive GPU
+Put two or three PDFs in a folder, e.g. `/project/<you>/test_pdfs/`, then ask Slurm for an interactive GPU
 session:
 
 ```bash
@@ -103,16 +103,16 @@ srun --pty --partition=bigTiger --gres=gpu:1 --cpus-per-task=4 --mem=64G --time=
 - `--cpus-per-task=4` asks for 4 CPU cores. `--mem=64G` asks for 64 GB of RAM.
 - `--time=00:30:00` is the wall-time limit (HH:MM:SS). The session is killed after this, so keep tests short.
 - `bash` is the command to run on the node: a shell.
-- **Produces**: a prompt on a compute node (e.g. `[jtbass1@itiger06 ...]`). It may wait in the queue first.
+- **Produces**: a prompt on a compute node (e.g. `[<you>@itiger06 ...]`). It may wait in the queue first.
 
 Then, inside that session:
 
 ```bash
-cd /project/jtbass1/tablescrape
+cd /project/<you>/tablescrape
 source hpc/itiger/env.sh
 nvidia-smi
-tablescrape list /project/jtbass1/test_pdfs
-tablescrape run /project/jtbass1/test_pdfs -o /project/jtbass1/test_out --max-pages 3
+tablescrape list /project/<you>/test_pdfs
+tablescrape run /project/<you>/test_pdfs -o /project/<you>/test_out --max-pages 3
 exit
 ```
 
@@ -123,13 +123,13 @@ exit
 - `tablescrape run DIR -o OUT` reads the pages. `-o` (`--output`) is the output folder. `--max-pages 3` reads only the
   first 3 pages of each PDF, for a fast check.
 - `exit` ends the session and gives the GPU back. Do not leave idle sessions holding a GPU.
-- **Produces**: `/project/jtbass1/test_out/tables.xlsx`, `csv/`, `index.csv`, `pages/`. Each page prints its time,
+- **Produces**: `/project/<you>/test_out/tables.xlsx`, `csv/`, `index.csv`, `pages/`. Each page prints its time,
   e.g. `p2: 1 table(s), 48.3s`. Note those times: they tell you how long a full run needs.
 
 Copy the workbook to your computer to look at it (run this **on your own machine**, not the cluster):
 
 ```bash
-scp jtbass1@itiger.memphis.edu:/project/jtbass1/test_out/tables.xlsx .
+scp <you>@itiger.memphis.edu:/project/<you>/test_out/tables.xlsx .
 ```
 
 - `scp` copies a file over SSH. The source is `user@host:path`. The destination `.` is your current folder.
@@ -137,8 +137,8 @@ scp jtbass1@itiger.memphis.edu:/project/jtbass1/test_out/tables.xlsx .
 ### 3. A whole folder (batch jobs)
 
 ```bash
-cd /project/jtbass1/tablescrape
-bash hpc/itiger/submit.sh /project/jtbass1/papers /project/jtbass1/papers_tables 2
+cd /project/<you>/tablescrape
+bash hpc/itiger/submit.sh /project/<you>/papers /project/<you>/papers_tables 2
 ```
 
 - `submit.sh PDF_DIR OUT_DIR N_GPUS`: submits a GPU job split into `N_GPUS` parts (here 2; each part takes every
@@ -151,8 +151,8 @@ What `submit.sh` does, in case you want to submit by hand:
 
 ```bash
 mkdir -p logs
-sbatch --array=0-1 hpc/itiger/scrape.sbatch /project/jtbass1/papers /project/jtbass1/papers_tables --no-build
-sbatch --dependency=afterany:123456 hpc/itiger/build.sbatch /project/jtbass1/papers_tables
+sbatch --array=0-1 hpc/itiger/scrape.sbatch /project/<you>/papers /project/<you>/papers_tables --no-build
+sbatch --dependency=afterany:123456 hpc/itiger/build.sbatch /project/<you>/papers_tables
 ```
 
 - `mkdir -p logs`: the job logs go to `logs/`. Slurm does not create that folder, and without it the log is lost.

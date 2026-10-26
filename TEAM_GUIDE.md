@@ -331,7 +331,7 @@ the GPU job. It also creates `logs/` (Slurm does not create the log folder itsel
 
 ## 4. Instructions for a new team member
 
-Replace `<you>` with your iTiger user name (the examples use `jtbass1`). **You need the university VPN (or campus
+Replace `<you>` with your iTiger user name. **You need the university VPN (or campus
 network) for anything that touches iTiger.** `itiger.memphis.edu` is a private address.
 
 ### 4.1 Connect
